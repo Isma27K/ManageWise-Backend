@@ -1,11 +1,10 @@
 // firebaseValidator.js
 const admin = require('firebase-admin');
+const serviceAccount = require('../credentials/managewise-service-key.json');
 
 // Initialize the Admin SDK
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  // Optionally, you can specify the Firebase project ID if not using applicationDefault
-  // projectId: 'your-project-id',
+  credential: admin.credential.cert(serviceAccount)
 });
 
 async function verifyToken(idToken) {
