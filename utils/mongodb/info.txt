@@ -1,0 +1,5 @@
+database: managewise
+
+collection: 
+    1. user
+    2. task

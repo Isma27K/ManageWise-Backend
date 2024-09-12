@@ -1,6 +1,6 @@
 // firebaseValidator.js
 const admin = require('firebase-admin');
-const serviceAccount = require('../credentials/managewise-service-key.json');
+const serviceAccount = require('../../credentials/managewise-service-key.json');
 
 // Initialize the Admin SDK
 admin.initializeApp({

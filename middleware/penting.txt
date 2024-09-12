@@ -1,0 +1,15 @@
+code tok mesti ada kat user untuk veryfy yang sidak ya real:
+
+cara guna ada kat test::
+
+
+// After login
+localStorage.setItem('token', response.token);
+
+// Sending request with token
+fetch('/protected-resource', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+});
