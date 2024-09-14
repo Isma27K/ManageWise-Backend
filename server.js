@@ -7,6 +7,7 @@ const path = require('path');
 const test = require('./routes/test/test');
 const userAuth = require('./routes/auth/userAuth.js');
 const DDdata = require('./routes/dashboard/DData.js');
+const update = require('./routes/update/update.js');
 
 // ===================================================================================
 
@@ -36,6 +37,8 @@ app.use("/test", test);
 app.use('/auth', userAuth);
 
 app.use('/api/data', DDdata);
+
+app.use('/update', update);
 
 app.get('*', (req, res) => {
   res.send("<h1 style='text-align: center; margin-top: 45vh'>404</h1>");

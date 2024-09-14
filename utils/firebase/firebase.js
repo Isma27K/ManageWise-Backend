@@ -8,7 +8,9 @@ const {
   signInWithPopup, 
   GoogleAuthProvider, 
   createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword 
+  signInWithEmailAndPassword, 
+  sendEmailVerification, 
+  updateEmail // Add updateEmail import
 } = require('firebase/auth');
 const { getFirestore, doc, getDoc, setDoc } = require('firebase/firestore');
 
@@ -51,6 +53,7 @@ const handlePasswordReset = async (email) => {
   }
 };
 
+// Create user document from authentication
 const createUserDocumentFromAuth = async (userAuth, additionalData = {}) => {
   if (!userAuth) return null;
 
@@ -77,6 +80,7 @@ const createUserDocumentFromAuth = async (userAuth, additionalData = {}) => {
   return userDocRef;
 };
 
+// Create user with email and password
 const createUserWithEmailAndPasswordCustom = async (email, password) => {
   if (!email || !password) throw new Error('Email and password are required');
 
@@ -85,11 +89,45 @@ const createUserWithEmailAndPasswordCustom = async (email, password) => {
   return { uid, user: userCredential.user };  // Return the UID along with the user object
 };
 
+// Sign in with email and password
 const signInAuthWithEmailAndPassword = async (email, password) => {
   if (!email || !password) throw new Error('Email and password are required');
 
   return await signInWithEmailAndPassword(auth, email, password);
 };
+
+// Function to update user's email
+const updateUserEmail = async (uid, newEmail) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  if (user && user.uid === uid) {
+    // If user is signed in and matches the provided uid
+    try {
+      await updateEmail(user, newEmail);
+      return 'Email updated successfully';
+    } catch (error) {
+      throw new Error(`Error updating email: ${error.message}`);
+    }
+  } else {
+    throw new Error('No user is currently signed in or UID mismatch');
+  }
+};
+
+const sendVerificationEmail = async (user, newEmail) => {
+  try {
+      // Temporarily update the email
+      await updateEmail(user, newEmail);
+      
+      // Send a verification email to the new address
+      await sendEmailVerification(user);
+      return 'Verification email sent. Please verify your new email.';
+  } catch (error) {
+      throw new Error(`Error sending verification email: ${error.message}`);
+  }
+};
+
+
 
 // Export all the needed functions
 module.exports = {
@@ -98,6 +136,9 @@ module.exports = {
   createUserDocumentFromAuth,
   createUserWithEmailAndPasswordCustom,
   signInAuthWithEmailAndPassword,
+  updateUserEmail, // Export the new function
+  sendVerificationEmail,
+  firebaseApp,
   auth,
   db
 };
