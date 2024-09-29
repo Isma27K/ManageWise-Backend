@@ -28,7 +28,8 @@ router.post('/register', async (req, res) => {
             return await collection.insertOne({ 
                 _id: registerResult,
                 name: name,
-                email: email 
+                email: email,
+                admin: false 
             });
         });
 

@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 // =================================== WHERE API ROUTES START =====================================================
 
 app.get('/', (req, res) => {
-  res.send("Hello, from izz");
+  res.jsonp({message: "Hello, from izz"});
 });
 
 //app.use("/test", test);
