@@ -2,12 +2,14 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const Mongob = require('./utils/mongodb/mongodb.js');
 
 //==================================== ROUTES =========================================
 //const test = require('./routes/test/test');
 const userAuth = require('./routes/auth/userAuth.js');
 const DDdata = require('./routes/dashboard/DData.js');
 const update = require('./routes/update/update.js');
+const admin = require('./routes/admin/admin.js');
 
 // ===================================================================================
 
@@ -16,6 +18,7 @@ const app = express();
 // Middleware to parse JSON requests and handle CORS
 app.use(express.json());
 app.use(cors());
+
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
@@ -35,10 +38,10 @@ app.get('/', (req, res) => {
 //app.use("/test", test);
 
 app.use('/auth', userAuth);
-
 app.use('/api/data', DDdata);
-
 app.use('/update', update);
+
+app.use('/api/admin', admin);
 
 // =================================== 404 Not Found Handler ========================================
 app.use((req, res) => {
