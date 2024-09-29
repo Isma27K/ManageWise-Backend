@@ -32,4 +32,35 @@ router.post('/generate', authenticateToken, async (req, res) => {
     }
 });
 
+router.post('/CreatePool', authenticateToken, async (req, res) => {
+    const { poolName, poolDescription, userId } = req.body;
+
+    //console.log(poolName, poolDescription, userIds);
+
+    if (req.user.admin) {
+        // Check if userIds is an array if provided
+        if (userId !== undefined && (!Array.isArray(userId) || userId.some(id => typeof id !== 'string'))) {
+            return res.status(400).json({ error: 'userIds must be an array of strings' });
+        }
+
+        const poolId = uuidv4();
+
+        await Mongob('ManageWise', 'pools', async (collection) => {
+            return await collection.insertOne({
+                _id: poolId,
+                name: poolName,
+                description: poolDescription,
+                userIds: userId || [], // Use an empty array if userIds is not provided
+                createdAt: new Date()
+            }); 
+        });
+
+        res.status(200).json({ message: "OK", poolId: poolId });
+    } else {
+        return res.status(403).json({ error: 'Unauthorized access' }); // Forbidden access for non-admins
+    }
+});
+
+
+
 module.exports = router;
