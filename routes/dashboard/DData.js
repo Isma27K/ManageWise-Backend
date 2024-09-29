@@ -24,10 +24,14 @@ router.post('/DUdata', authenticateToken, async (req, res) => {
 });
 
 // Route for Dashboard Data
-router.post('/DDdata', async (req, res) => {
+router.post('/DDdata', authenticateToken, async (req, res) => {
     try {
+        const data = await Mongob('ManageWise', 'pools', async (collection) => {
+            return await collection.find({}).toArray();
+        });
+
         // Placeholder for dashboard data
-        res.status(200).json("");
+        res.status(200).json(data);
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
         res.status(401).json({ error: error.message });

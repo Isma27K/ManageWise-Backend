@@ -51,6 +51,7 @@ router.post('/CreatePool', authenticateToken, async (req, res) => {
                 name: poolName,
                 description: poolDescription,
                 userIds: userId || [], // Use an empty array if userIds is not provided
+                tasks: [],
                 createdAt: new Date()
             }); 
         });
