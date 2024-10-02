@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
 
 // Route for register
 router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, id } = req.body;
 
     try {
         const registerResult = await register(name, email, password);
@@ -32,6 +32,13 @@ router.post('/register', async (req, res) => {
                 admin: false 
             });
         });
+
+        await Mongob('ManageWise', 'regId', async (collection) => {
+            return await collection.deleteOne({ 
+                _id: id 
+            });
+        });
+
 
         res.status(200).json({message: "OK"});
     } catch (error) {  // Pass 'error' as a parameter here

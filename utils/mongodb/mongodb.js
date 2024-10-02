@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 
 // Replace with your MongoDB connection URI
-const uri = 'mongodb://localhost:27017';
+const uri = 'mongodb+srv://ManageWise:IniPasswordDia2@managewise.nzr2u.mongodb.net/?retryWrites=true&w=majority&appName=ManageWise';
 
 // Create a new MongoClient without deprecated options
 const client = new MongoClient(uri);
