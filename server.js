@@ -37,11 +37,11 @@ app.get('/', (req, res) => {
 
 //app.use("/test", test);
 
-app.use('/auth', userAuth);
-app.use('/api/data', DDdata);
-app.use('/update', update);
-
-app.use('/api/admin', admin);
+app.use('/auth', userAuth);                 // user authentication related routes
+app.use('/api/data', DDdata);               // dashboard data related routes
+app.use('/update', update);                 // update related routes
+app.use('/api/admin', admin);               // admin related routes
+//app.use('/api/archive', archive);           // archive related routes
 
 // =================================== 404 Not Found Handler ========================================
 app.use((req, res) => {
