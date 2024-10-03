@@ -1,7 +1,8 @@
 const { MongoClient } = require('mongodb');
+require('dotenv').config();
 
 // Replace with your MongoDB connection URI
-const uri = 'mongodb+srv://ManageWise:IniPasswordDia2@managewise.nzr2u.mongodb.net/?retryWrites=true&w=majority&appName=ManageWise';
+const uri = process.env.MONGO_URI;
 
 // Create a new MongoClient without deprecated options
 const client = new MongoClient(uri);

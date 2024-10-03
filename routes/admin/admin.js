@@ -4,31 +4,42 @@ const { v4: uuidv4 } = require('uuid');
 
 const authenticateToken = require("../../middleware/jwtAuth.js");
 const Mongob = require('../../utils/mongodb/mongodb.js');
+const { authAdmin } = require('../../utils/firebase/firebaseAdmin.js');
+const { collection } = require('firebase/firestore');
 
 
 router.post('/generate', authenticateToken, async (req, res) => {
-
-    //console.log(req.user);
-
-    // Check if the user is an admin
     if (req.user.admin) {
         try {
-            const id = uuidv4(); // Generate a unique ID
-
-            // Insert the new document with both _id and time fields
-            await Mongob('ManageWise', 'regId', async (collection) => {
-                return await collection.insertOne({
-                    _id: id,
-                    time: new Date(),
-                });
+            const user = await Mongob('ManageWise', 'users', async (collection) => {
+                return await collection.findOne({_id: req.user.uid});
             });
 
-            res.status(200).json({ id }); // Return the generated ID
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            if (user.admin) {
+                const id = uuidv4(); // Generate a unique ID
+
+                // Insert the new document with both _id and time fields
+                await Mongob('ManageWise', 'regId', async (collection) => {
+                    return await collection.insertOne({
+                        _id: id,
+                        time: new Date(),
+                    });
+                });
+
+                res.status(200).json({ id }); // Return the generated ID
+            } else {
+                res.status(403).json({ error: 'User is not an admin' });
+            }
         } catch (error) {
-            res.status(500).json({ error: error.message }); // Internal server error for database issues
+            console.error('Error in /generate route:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
     } else {
-        return res.status(403).json({ error: 'Unauthorized access' }); // Forbidden access for non-admins
+        res.status(403).json({ error: 'Unauthorized access' }); // Forbidden access for non-admins
     }
 });
 
@@ -61,6 +72,44 @@ router.post('/CreatePool', authenticateToken, async (req, res) => {
         return res.status(403).json({ error: 'Unauthorized access' }); // Forbidden access for non-admins
     }
 });
+
+
+router.post('/DeleteUser', authenticateToken, async (req, res) => {
+    const { userId } = req.body;
+
+    if (req.user.admin) {
+        try {
+
+            const user = await Mongob('ManageWise', 'users', async (collection) => {
+                return await collection.findOne({_id: req.user.uid});
+            });
+    
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            if (!user.admin){
+                return res.status(401).json({error: 'you are not authorize to do so'})
+            }
+    
+            if (user.admin) {
+                await authAdmin.deleteUser(userId);
+
+                await Mongob('ManageWise', 'users', async (collection) => {
+                    return await collection.deleteOne({_id: userId});
+                })
+
+                res.status(200).json({ message: "User deleted successfully" });
+            }
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    } else {
+        console.log("")
+    }
+
+});
+    
 
 
 
