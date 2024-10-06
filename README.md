@@ -37,8 +37,15 @@ This is the backend server for the ManageWise Project, a comprehensive task mana
    ```bash
    PORT=5000
    JWT_SECRET=your_jwt_secret
-   MONGODB_URI=your_mongodb_connection_string
-   FIREBASE_CONFIG=your_firebase_config_json
+   MONGO_URI=your_mongodb_connection_string
+   REACT_APP_API_KEY=your_firebase_api_key
+   REACT_APP_AUTH_DOMAIN=your_firebase_auth_domain
+   REACT_APP_DATABASE_URL=your_firebase_database_url
+   REACT_APP_PROJECT_ID=your_firebase_project_id
+   REACT_APP_STORAGE_BUCKET=your_firebase_storage_bucket
+   REACT_APP_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+   REACT_APP_APP_ID=your_firebase_app_id
+   REACT_APP_MEASUREMENT_ID=your_firebase_measurement_id
    ```
 
 ### Running the Server
@@ -59,22 +66,31 @@ This is the backend server for the ManageWise Project, a comprehensive task mana
 
 - `POST /auth/register`: Register a new user
 - `POST /auth/login`: Login and receive a JWT
+- `POST /auth/checkLink`: Check if a registration link is valid
 
 ### User Data
 
 - `POST /api/data/DUdata`: Get user data (protected route)
 - `POST /api/data/DDdata`: Get dashboard data (protected route)
+- `POST /api/data/AllUserData`: Get all users data (protected route, admin only)
 
 ### User Updates
 
 - `POST /update/username`: Update user's username (protected route)
+
+### Admin Routes
+
+- `POST /api/admin/generate`: Generate a registration link (admin only)
+- `POST /api/admin/CreatePool`: Create a new pool (admin only)
+- `POST /api/admin/DeleteUser`: Delete a user (admin only)
 
 ## Database Structure
 
 - Database: `ManageWise`
 - Collections:
   - `users`: User information
-  - `tasks`: Task information (to be implemented)
+  - `pools`: Pool information
+  - `regId`: Registration IDs
 
 ## Authentication Flow
 
