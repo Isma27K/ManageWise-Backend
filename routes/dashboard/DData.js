@@ -41,7 +41,7 @@ router.post('/DDdata', authenticateToken, async (req, res) => {
 router.post('/AllUserData', authenticateToken, async (req, res) => {
     try {
         const data = await Mongob('ManageWise', 'users', async (collection) => {
-            return await collection.find({}, { projection: { _id: 1, name: 1, email: 1 } }).toArray();
+            return await collection.find({}, { projection: { _id: 1, name: 1, email: 1, avatar: 1 } }).toArray();
         });
 
         //console.log(data);
@@ -49,7 +49,8 @@ router.post('/AllUserData', authenticateToken, async (req, res) => {
         const formattedData = data.map(user => ({
             uid: user._id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            avatar: user.avatar
         }));
         
         res.status(200).json(formattedData);

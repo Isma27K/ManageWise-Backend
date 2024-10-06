@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const Mongob = require('./utils/mongodb/mongodb.js');
+const multer = require('multer');
 
 //==================================== ROUTES =========================================
 //const test = require('./routes/test/test');
@@ -15,10 +16,13 @@ const admin = require('./routes/admin/admin.js');
 
 const app = express();
 
-// Middleware to parse JSON requests and handle CORS
-app.use(express.json());
+// Middleware to handle CORS
 app.use(cors());
 
+// Middleware to parse JSON requests only for specific routes
+app.use('/auth', express.json());
+app.use('/api/data', express.json());
+app.use('/api/admin', express.json());
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
@@ -42,6 +46,9 @@ app.use('/api/data', DDdata);               // dashboard data related routes
 app.use('/update', update);                 // update related routes
 app.use('/api/admin', admin);               // admin related routes
 //app.use('/api/archive', archive);           // archive related routes
+
+// Serve static files for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // =================================== 404 Not Found Handler ========================================
 app.use((req, res) => {
