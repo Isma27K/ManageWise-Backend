@@ -11,6 +11,7 @@ const userAuth = require('./routes/auth/userAuth.js');
 const DDdata = require('./routes/dashboard/DData.js');
 const update = require('./routes/update/update.js');
 const admin = require('./routes/admin/admin.js');
+const task = require('./routes/task/task.js');
 
 // ===================================================================================
 
@@ -19,10 +20,11 @@ const app = express();
 // Middleware to handle CORS
 app.use(cors());
 
-// Middleware to parse JSON requests only for specific routes
-app.use('/auth', express.json());
-app.use('/api/data', express.json());
-app.use('/api/admin', express.json());
+// Parse JSON bodies for all routes
+app.use(express.json());
+
+// Parse URL-encoded bodies for all routes
+app.use(express.urlencoded({ extended: true }));
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
@@ -43,6 +45,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth', userAuth);                 // user authentication related routes
 app.use('/api/data', DDdata);               // dashboard data related routes
+app.use('/api/task', task);                 // task related routes
 app.use('/update', update);                 // update related routes
 app.use('/api/admin', admin);               // admin related routes
 //app.use('/api/archive', archive);           // archive related routes

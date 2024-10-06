@@ -19,10 +19,11 @@ router.post('/username', authenticateToken, async (req, res) => {
     }
 
     try {
+        const capitalizedUsername = newUsername.toUpperCase();
         await Mongob('ManageWise', 'users', async (collection) => {
             return await collection.updateOne(
                 { _id: uid },
-                { $set: { name: newUsername } },
+                { $set: { name: capitalizedUsername } },
                 { upsert: false }
             );
         });
@@ -59,7 +60,7 @@ router.post('/avatar', authenticateToken, upload.single('avatar'), async (req, r
         }
 
         if (name) {
-            updates.name = name;
+            updates.name = name.toUpperCase(); // Capitalize the name
         }
 
         if (Object.keys(updates).length === 0) {
