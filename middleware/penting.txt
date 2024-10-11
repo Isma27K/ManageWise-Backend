@@ -1,4 +1,4 @@
-code tok mesti ada kat user untuk veryfy yang sidak ya real:
+code tok mesti ada kat front-end untuk veryfy yang sidak ya real:
 
 cara guna ada kat test::
 
