@@ -20,7 +20,6 @@ router.post('/CreatePool', authenticateToken, async (req, res) => {
     return adminCreatePool(req, res);
 });
 
-
 router.post('/DeleteUser', authenticateToken, async (req, res) => {
     return adminDeleteUser(req, res);
 });
