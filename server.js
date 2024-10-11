@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const Mongob = require('./utils/mongodb/mongodb.js');
 const multer = require('multer');
+const authenticateToken = require('./middleware/jwtAuth.js');
 
 //==================================== ROUTES =========================================
 //const test = require('./routes/test/test');
@@ -41,7 +42,7 @@ function ensureUploadDirExists() {
 ensureUploadDirExists();
 
 // Serve static files for uploads
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.use('/uploads', authenticateToken, express.static(path.join(__dirname, '..', 'uploads')));
 
 // Set up multer for file uploads
 const storage = multer.diskStorage({
