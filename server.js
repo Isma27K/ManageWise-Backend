@@ -41,26 +41,8 @@ function ensureUploadDirExists() {
 // Call the function to ensure the upload directory exists
 ensureUploadDirExists();
 
-// Serve static files for uploads
-app.use('/uploads', authenticateToken, express.static(path.join(__dirname, '..', 'uploads')));
-
-// Set up multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '..', 'uploads')) // This will create an 'uploads' folder one level up from the backend folder
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
-  }
-})
-
-const upload = multer({ storage: storage })
-
-// In your route setup
-app.use('/api/task', upload.single('attachment'), require('./routes/task/task'));
-
-
-// ===================================================================================
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {

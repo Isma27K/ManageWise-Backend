@@ -1,15 +1,23 @@
 const Mongob = require('../../utils/mongodb/mongodb.js');
-
+const path = require('path');
 
 const createTask = async (req, res) => {
-    //console.log('Received request body:', req.body);  // Log the entire request body
-
     try {
         const { name, description, dueDate, poolId, submitters } = req.body;
 
         if (!name || !description || !dueDate || !poolId || !submitters) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
+
+        // Handle file attachments
+        const attachments = req.files ? req.files.map(file => ({
+            name: file.originalname,
+            link: path.join('uploads', file.filename)
+        })) : [];
+
+        // Parse dueDate and submitters
+        const parsedDueDate = JSON.parse(dueDate);
+        const parsedSubmitters = JSON.parse(submitters);
 
         // Use Mongob to perform the database operation
         const result = await Mongob('ManageWise', 'pools', async (collection) => {
@@ -25,9 +33,10 @@ const createTask = async (req, res) => {
                 id: pool.tasks ? pool.tasks.length + 1 : 1,
                 name,
                 description,
-                dueDate,
+                dueDate: parsedDueDate,
                 progress: [],
-                contributor: submitters
+                contributor: parsedSubmitters,
+                attachments: attachments
             };
 
             // Update the pool with the new task
