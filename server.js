@@ -6,6 +6,7 @@ const fs = require('fs');
 const Mongob = require('./utils/mongodb/mongodb.js');
 const multer = require('multer');
 const authenticateToken = require('./middleware/jwtAuth.js');
+const bodyParser = require('body-parser');
 
 //==================================== ROUTES =========================================
 //const test = require('./routes/test/test');
@@ -18,6 +19,11 @@ const task = require('./routes/task/task.js');
 //====================================================================================
 
 const app = express();
+
+// Increase the limit for JSON payloads
+app.use(bodyParser.json({limit: '50mb'}));
+// Increase the limit for URL-encoded payloads
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 // Middleware to handle CORS
 app.use(cors());
@@ -76,3 +82,4 @@ app.use((req, res) => {
 });
 
 module.exports = app;
+
