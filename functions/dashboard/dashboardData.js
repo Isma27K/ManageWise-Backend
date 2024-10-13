@@ -3,14 +3,21 @@ const Mongob = require('../../utils/mongodb/mongodb.js');
 const dashboardData = async (req, res) => {
     try {
         const data = await Mongob('ManageWise', 'pools', async (collection) => {
-            return await collection.find({}).toArray();
+            const pools = await collection.find({}).toArray();
+            
+            // Filter out archived tasks for each pool
+            const filteredPools = pools.map(pool => ({
+                ...pool,
+                tasks: pool.tasks.filter(task => !task.isArchived)
+            }));
+            
+            return filteredPools;
         });
 
-        // Placeholder for dashboard data
         res.status(200).json(data);
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        res.status(401).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 }
 

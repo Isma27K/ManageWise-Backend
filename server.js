@@ -9,6 +9,7 @@ const authenticateToken = require('./middleware/jwtAuth.js');
 
 //==================================== ROUTES =========================================
 //const test = require('./routes/test/test');
+const archive = require('./routes/archive/archive.js');
 const userAuth = require('./routes/auth/userAuth.js');
 const DDdata = require('./routes/dashboard/DData.js');
 const update = require('./routes/update/update.js');
@@ -66,7 +67,7 @@ app.use('/api/data', DDdata);               // dashboard data related routes
 app.use('/api/task', task);                 // task related routes
 app.use('/update', update);                 // update related routes
 app.use('/api/admin', admin);               // admin related routes
-//app.use('/api/archive', archive);           // archive related routes
+app.use('/api/archive', archive);           // archive related routes
 
 
 // =================================== 404 Not Found Handler ========================================
