@@ -2,10 +2,12 @@ const Mongob = require('../../utils/mongodb/mongodb.js');
 const path = require('path');
 
 const updateSelfTask = async (req, res) => {
-    const { title, description, CID, taskID, userId } = req.body;
+    const { title, description, CID, taskID } = req.body;
     let attachment = null;
 
-    if (!taskID || !CID || !userId) {
+    console.log(req.body);
+
+    if (!taskID || !CID) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -19,7 +21,7 @@ const updateSelfTask = async (req, res) => {
 
     try {
         const result = await Mongob('ManageWise', 'users', async (collection) => {
-            const pool = await collection.findOne({ _id: userId });
+            const pool = await collection.findOne({ _id: CID });
 
             if (!pool) {
                 return { error: 'Pool not found' };
@@ -41,7 +43,7 @@ const updateSelfTask = async (req, res) => {
 
             // Update only the task-specific progress
             const updateResult = await collection.updateOne(
-                { _id: userId, "tasks.id": parseInt(taskID) },
+                { _id: CID, "tasks.id": parseInt(taskID) },
                 { 
                     $push: { 
                         "tasks.$.progress": newProgress

@@ -6,6 +6,7 @@ const updateProgress = async (req, res) => {
     const { title, description, CID, taskID, poolID } = req.body;
     let attachment = null;
 
+    //console.log(req.body);
     if (!taskID || !CID || !poolID) {
         return res.status(400).json({ error: 'Missing required fields' });
     }

@@ -25,19 +25,19 @@ const upload = multer({ storage: storage });
 
 //====================== Routes ======================
 
-router.post('/createTask', authenticateToken, upload.array('files'), async (req, res) => {
+router.post('/createTask', authenticateToken, upload.array('files'), async (req, res) => { // pool
     return createTask(req, res);
 });
 
-router.post('/updateProgress', authenticateToken, upload.single('attachment'), async (req, res) => {
+router.post('/updateProgress', authenticateToken, upload.single('attachment'), async (req, res) => { // pool
     return updateProgress(req, res);
 });
 
-router.post('/updateSelfTask', authenticateToken,  upload.single('attachment'), async (req, res) => {
-    return updateSelfTask(req, res);
+router.post('/updateTaskProgress', authenticateToken,  upload.single('attachment'), async (req, res) => { // self
+    return updateSelfTask(req, res); 
 });
-
-router.post('/createSelfTask', authenticateToken, upload.array('files'), async (req, res) => {
+ 
+router.post('/createSelfTask', authenticateToken, upload.array('files'), async (req, res) => { //self
     return createSelfTask(req, res);
 });
 
