@@ -33,6 +33,7 @@ router.post('/register', async (req, res) => {
                 _id: registerResult,
                 name: name,
                 email: email,
+                tasks: [],
                 admin: false 
             });
         });
