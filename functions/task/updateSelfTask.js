@@ -5,7 +5,7 @@ const updateSelfTask = async (req, res) => {
     const { title, description, CID, taskID } = req.body;
     let attachment = null;
 
-    console.log(req.body);
+    //console.log(req.body);
 
     if (!taskID || !CID) {
         return res.status(400).json({ error: 'Missing required fields' });
