@@ -45,7 +45,6 @@ function ensureUploadDirExists() {
   }
 }
 
-// Call the function to ensure the upload directory exists
 ensureUploadDirExists();
 
 // Serve static files from the uploads directory
