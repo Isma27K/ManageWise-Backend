@@ -5,7 +5,7 @@ describe('Basic Server Tests', () => {
   test('GET / should return hello message', async () => {
     const response = await request(app).get('/');
     expect(response.status).toBe(200);
-    expect(response.text).toBe("Hello, from izz");
+    expect(response.text).toBe('{"message":"Hello, from izz"}');
   });
 
   test('Non-existent route should return 404', async () => {
