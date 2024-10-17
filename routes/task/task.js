@@ -8,8 +8,7 @@ const path = require('path');
 //====================== Functions ======================
 const { createTask } = require('../../functions/task/createTask.js');
 const { updateProgress } = require('../../functions/task/updateProgress.js');
-const { updateSelfTask } = require('../../functions/task/updateSelfTask.js');
-const { createSelfTask } = require('../../functions/task/createSelfTask.js');
+
 
 //====================== Multer Configuration ======================
 const storage = multer.diskStorage({
@@ -31,14 +30,6 @@ router.post('/createTask', authenticateToken, upload.array('files'), async (req,
 
 router.post('/updateProgress', authenticateToken, upload.single('attachment'), async (req, res) => { // pool
     return updateProgress(req, res);
-});
-
-router.post('/updateTaskProgress', authenticateToken,  upload.single('attachment'), async (req, res) => { // self
-    return updateSelfTask(req, res); 
-});
- 
-router.post('/createSelfTask', authenticateToken, upload.array('files'), async (req, res) => { //self
-    return createSelfTask(req, res);
 });
 
 module.exports = router;
