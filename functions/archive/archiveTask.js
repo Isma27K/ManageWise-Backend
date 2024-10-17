@@ -22,9 +22,9 @@ const archiveTask = async (req, res) => {
             return res.status(500).json({ error: 'Failed to archive task' });
         }
 
-        res.status(200).json({ message: 'Task archived successfully', updatedPool: response });
+        res.status(200).json({ message: 'Task unarchived successfully', updatedPool: response });
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while archiving the task' });
+        res.status(500).json({ error: 'An error occurred while unarchiving the task' });
     }
 };
 

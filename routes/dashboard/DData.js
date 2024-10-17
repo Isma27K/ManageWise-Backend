@@ -7,6 +7,7 @@ const authenticateToken = require("../../middleware/jwtAuth.js");
 const { userData } = require('../../functions/dashboard/userData.js');
 const { dashboardData } = require('../../functions/dashboard/dashboardData.js');
 const { allUserData } = require('../../functions/dashboard/allUserData.js');
+const { archivePool } = require('../../functions/dashboard/archivePool.js');
 
 //====================== Routes ======================
 
@@ -23,6 +24,11 @@ router.post('/DDdata', authenticateToken, async (req, res) => {
 // Route for All User Data
 router.post('/AllUserData', authenticateToken, async (req, res) => {
     return allUserData(req, res);
+});
+
+// Route for Archive Pool
+router.post('/archivePool', authenticateToken, async (req, res) => {
+    return archivePool(req, res);
 });
 
 module.exports = router;
