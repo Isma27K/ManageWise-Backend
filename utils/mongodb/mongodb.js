@@ -8,27 +8,37 @@ const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 
 module.exports = async function Mongob(dbName, collectionName, operationCallback) {
-  try {
-    // Check if the client is already connected
-    if (!client.topology || !client.topology.isConnected()) {
-      await client.connect(); // Connect to MongoDB if not already connected
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      // Check if the client is already connected
+      if (!client.topology || !client.topology.isConnected()) {
+        await client.connect(); // Connect to MongoDB if not already connected
+      }
+
+      // Access the database and collection
+      const db = client.db(dbName);
+      const collection = db.collection(collectionName);
+
+      // Execute the operation passed as a callback
+      if (operationCallback) {
+        return await operationCallback(collection);
+      }
+
+      // Optionally, return the collection for further operations outside the function
+      return collection;
+
+    } catch (error) {
+      console.error(`MongoDB Operation Error (${retries} retries left):`, error);
+      console.error(`Failed operation details - DB: ${dbName}, Collection: ${collectionName}`);
+      retries--;
+      if (retries === 0) {
+        console.error('All retries exhausted. Throwing error.');
+        throw error;
+      }
+      console.log(`Waiting for 1 second before retry...`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-
-    // Access the database and collection
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-
-    // Execute the operation passed as a callback
-    if (operationCallback) {
-      return await operationCallback(collection);
-    }
-
-    // Optionally, return the collection for further operations outside the function
-    return collection;
-
-  } catch (error) {
-    console.error('MongoDB Operation Error:', error);
-    throw error;
   }
 };
 

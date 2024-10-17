@@ -8,6 +8,7 @@ const path = require('path');
 //====================== Functions ======================
 const { createTask } = require('../../functions/task/createTask.js');
 const { updateProgress } = require('../../functions/task/updateProgress.js');
+const { saveUpdateTask } = require('../../functions/task/saveUpdateTask.js');
 
 
 //====================== Multer Configuration ======================
@@ -30,6 +31,10 @@ router.post('/createTask', authenticateToken, upload.array('files'), async (req,
 
 router.post('/updateProgress', authenticateToken, upload.single('attachment'), async (req, res) => { // pool
     return updateProgress(req, res);
+});
+
+router.post('/saveUpdateTask', authenticateToken, async (req, res) => { // pool
+    return saveUpdateTask(req, res);
 });
 
 module.exports = router;
