@@ -82,7 +82,7 @@ app.use('/api/report', report);
 
 // =================================== 404 Not Found Handler ========================================
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  res.status(404).json({ message: 'ahahahhaaha, test test' });
 });
 
 module.exports = app;
