@@ -63,7 +63,7 @@ if (process.env.NODE_ENV === 'production') {
 // =================================== WHERE API ROUTES START =====================================================
 
 app.get('/', (req, res) => {
-  res.jsonp({message: "Hello, from izz"});
+  res.jsonp({message: "Hello, from izzma"});
 });
 
 //app.use("/test", test);
@@ -82,7 +82,7 @@ app.use('/api/report', report);
 
 // =================================== 404 Not Found Handler ========================================
 app.use((req, res) => {
-  res.status(404).json({ message: 'ahahahhaaha, test test huhu haha' });
+  res.status(404).json({ message: 'Route Not Found' });
 });
 
 module.exports = app;
