@@ -63,7 +63,7 @@ if (process.env.NODE_ENV === 'production') {
 // =================================== WHERE API ROUTES START =====================================================
 
 app.get('/', (req, res) => {
-  res.jsonp({message: "Hello, from izzma llagi. haloooo. test test"});
+  res.jsonp({message: "Hello, from izzma llagi. haloooo. bend bend"});
 });
 
 //app.use("/test", test);
