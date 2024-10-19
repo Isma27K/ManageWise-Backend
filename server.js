@@ -16,7 +16,8 @@ const DDdata = require('./routes/dashboard/DData.js');
 const update = require('./routes/update/update.js');
 const admin = require('./routes/admin/admin.js');
 const task = require('./routes/task/task.js');
-//====================================================================================
+const report = require('./routes/report/report.js');
+//============================= File Uploads middleware ========================================
 
 const app = express();
 
@@ -34,7 +35,7 @@ app.use(express.json());
 // Parse URL-encoded bodies for all routes
 app.use(express.urlencoded({ extended: true }));
 
-//====================================================================================
+//================================== Serve File Uploads ========================================
 
 // Function to ensure upload directory exists
 function ensureUploadDirExists() {
@@ -74,6 +75,10 @@ app.use('/update', update);                 // update related routes
 app.use('/api/admin', admin);               // admin related routes
 app.use('/api/archive', archive);           // archive related routes
 
+//                           ------------------
+
+app.use('/api/report', report);
+
 
 // =================================== 404 Not Found Handler ========================================
 app.use((req, res) => {
@@ -82,3 +87,4 @@ app.use((req, res) => {
 
 module.exports = app;
 
+// mun nampak, maksudnya okeyyy
