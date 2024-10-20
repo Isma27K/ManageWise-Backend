@@ -6,6 +6,9 @@ logs/
 *.log
 npm-debug.log*
 
+# ignore save.bat
+save.bat
+
 # Environment variables
 .env
 
