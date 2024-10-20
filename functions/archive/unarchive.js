@@ -7,7 +7,7 @@ const unarchiveTask = async (req, res) => {
         const response = await Mongob('ManageWise', 'pools', async (collection) => {
             return await collection.findOneAndUpdate(
                 { _id: poolId, "tasks.id": taskId },
-                { $set: { "tasks.$.isArchived": false } },
+                { $set: { "tasks.$.isArchived": false, "tasks.$.archivedAt": null } },
                 { returnDocument: 'after' }
             );
         });
