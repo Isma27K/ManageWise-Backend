@@ -37,7 +37,9 @@ const createTask = async (req, res) => {
                 progress: [],
                 contributor: parsedSubmitters,
                 attachments: attachments,
-                isArchived: false
+                isArchived: false,
+                createdAt: new Date(),
+                archivedAt: null
             };
 
             // Update the pool with the new task
