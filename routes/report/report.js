@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../../utils/auth/auth.js');
+const authenticateToken = require('../../middleware/jwtAuth.js');
 const { reportTask } = require('../../functions/report/report-main.js');
 
 
