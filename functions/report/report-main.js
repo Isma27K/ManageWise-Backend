@@ -5,7 +5,6 @@ const reportMain = async (req, res) => {
         const poolTaskPartionResult = await poolTaskPartion(req, res);
         
         res.status(200).json({
-            success: true,
             ...poolTaskPartionResult
         });
     } catch (error) {
