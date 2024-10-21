@@ -1,14 +1,12 @@
 const Mongob = require('../../../utils/mongodb/mongodb.js');
 
-const taskDeliveryMatrix = async (req, res) => {
-    const user = req.user.uid;
-
+const taskDeliveryMatrix = async (req, res, targetUser) => {
     try {
         const result = await Mongob('ManageWise', 'pools', async (collection) => {
             return await collection.find({
                 'tasks': {
                     $elemMatch: {
-                        'contributor': user,
+                        'contributor': targetUser,
                         'isArchived': true
                     }
                 }
@@ -22,7 +20,7 @@ const taskDeliveryMatrix = async (req, res) => {
 
         result.forEach(pool => {
             pool.tasks.forEach(task => {
-                if (task.contributor.includes(user) && task.isArchived) {
+                if (task.contributor.includes(targetUser) && task.isArchived) {
                     totalTasks++;
 
                     const dueDate = new Date(task.dueDate[1]);

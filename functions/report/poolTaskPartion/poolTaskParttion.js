@@ -1,21 +1,12 @@
 const Mongob = require('../../../utils/mongodb/mongodb.js');
 
 
-const poolTaskPartion = async (req, res) => {
-    const {selectUser} = req.body;
-    const user = "";
-
-    if (req.user.admin && selectUser) {
-        user = selectUser;
-    }else{
-        user = req.user.uid;
-    }
-    
+const poolTaskPartion = async (req, res, targetUser) => {
     const result = await Mongob('ManageWise', 'pools', async (collection) => {
         return await collection.find({
             'tasks': {
                 $elemMatch: {
-                    'contributor': user
+                    'contributor': targetUser
                 }
             }
         }).toArray();
@@ -25,7 +16,7 @@ const poolTaskPartion = async (req, res) => {
     const taskCompletionSummary = {
         statusBreakdown: result.map(pool => ({
             status: pool.name,
-            count: pool.tasks.filter(task => task.contributor.includes(user)).length
+            count: pool.tasks.filter(task => task.contributor.includes(targetUser)).length
         }))
     };
 

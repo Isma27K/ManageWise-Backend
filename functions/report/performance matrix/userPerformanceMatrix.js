@@ -10,10 +10,10 @@ const Mongob = require('../../../utils/mongodb/mongodb.js');
 //    averageCompletionTime: 2.5, // in days
 //},
 
-const calculateTaskCompletionRate = async (user) => {
+const calculateTaskCompletionRate = async (targetUser) => {
     const result = await Mongob('ManageWise', 'pools', async (collection) => {
         return await collection.find({
-            'tasks.contributor': user
+            'tasks.contributor': targetUser
         }).toArray();
     });
 
@@ -22,7 +22,7 @@ const calculateTaskCompletionRate = async (user) => {
 
     result.forEach(pool => {
         pool.tasks.forEach(task => {
-            if (task.contributor.includes(user)) {
+            if (task.contributor.includes(targetUser)) {
                 totalTasks++;
                 if (task.isArchived) {
                     completedTasks++;
@@ -42,11 +42,11 @@ const calculateTaskCompletionRate = async (user) => {
     };
 }
 
-const calculateAverageCompletionTime = async (user) => {
+const calculateAverageCompletionTime = async (targetUser) => {
 
     const result = await Mongob('ManageWise', 'pools', async (collection) => {
         return await collection.find({
-            'tasks.contributor': user,
+            'tasks.contributor': targetUser,
             'tasks.isArchived': true
         }).toArray();
     });
@@ -56,7 +56,7 @@ const calculateAverageCompletionTime = async (user) => {
 
     result.forEach(pool => {
         pool.tasks.forEach(task => {
-            if (task.contributor.includes(user) && task.isArchived) {
+            if (task.contributor.includes(targetUser) && task.isArchived) {
                 const createdAt = new Date(task.createdAt);
                 const archivedAt = new Date(task.archivedAt);
                 if (!isNaN(createdAt) && !isNaN(archivedAt)) {
@@ -83,17 +83,17 @@ const calculateAverageCompletionTime = async (user) => {
     };
 }
 
-const findTopPools = async (user) => {
+const findTopPools = async (targetUser) => {
     const result = await Mongob('ManageWise', 'pools', async (collection) => {
         return await collection.find({
-            'tasks.contributor': user,
+            'tasks.contributor': targetUser,
             'tasks.isArchived': true
         }).toArray();
     });
 
     const poolCompletions = result.map(pool => {
         const completedTasks = pool.tasks.filter(task => 
-            task.contributor.includes(user) && task.isArchived
+            task.contributor.includes(targetUser) && task.isArchived
         ).length;
 
         return {
@@ -109,12 +109,10 @@ const findTopPools = async (user) => {
     return poolCompletions.slice(0, 7);
 }
 
-const userPerformanceMatrix = async (req, res) => {
-    const user = req.user.uid;
-
-    const taskCompletionMetrics = await calculateTaskCompletionRate(user);
-    const completionTimeMetrics = await calculateAverageCompletionTime(user);
-    const topPools = await findTopPools(user);
+const userPerformanceMatrix = async (req, res, targetUser) => {
+    const taskCompletionMetrics = await calculateTaskCompletionRate(targetUser);
+    const completionTimeMetrics = await calculateAverageCompletionTime(targetUser);
+    const topPools = await findTopPools(targetUser);
 
     const result = {
         userPerformanceMetrics: {

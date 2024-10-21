@@ -6,14 +6,13 @@ const parseDate = (dateString) => {
     return isNaN(date.getTime()) ? null : date;
 };
 
-const timeBaseReport = async (req, res) => {
-    const user = req.user.uid;
+const timeBaseReport = async (req, res, targetUser) => {
     try {
         const result = await Mongob('ManageWise', 'pools', async (collection) => {
             const pools = await collection.find({
                 'tasks': {
                     $elemMatch: {
-                        'contributor': user,
+                        'contributor': targetUser,
                     }
                 }
             }).toArray();
