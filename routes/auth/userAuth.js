@@ -7,6 +7,7 @@ const login = require('../../functions/auth/login.js');
 const register = require('../../functions/auth/register.js');
 const Mongob = require("../../utils/mongodb/mongodb.js");
 const { checkLink } = require('../../functions/auth/checkLink.js');
+const { forgetPassword } = require('../../functions/auth/forget-password.js');
 
 //====================== Routes ======================
 // Route for login
