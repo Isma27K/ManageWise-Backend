@@ -55,4 +55,8 @@ router.post('/checkLink', async (req, res) => {
     return checkLink(req, res);
 });
 
+router.post('/forget-password', async (req, res) => {
+    return forgetPassword(req, res);
+});
+
 module.exports = router;
