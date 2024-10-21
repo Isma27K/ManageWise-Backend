@@ -4,6 +4,10 @@ const { ObjectId } = require('mongodb');
 const updatePool = async (req, res) => {
     const { poolId, name, description } = req.body;
     const user = req.user.uid;
+    
+    if (!req.user.admin) {
+        return res.status(403).json({ message: 'Unauthorized' });
+    }
 
     if (!poolId || !name) {
         return res.status(400).json({ message: 'Pool ID and name are required' });
