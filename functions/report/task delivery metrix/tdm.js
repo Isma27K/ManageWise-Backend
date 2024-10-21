@@ -57,7 +57,7 @@ const taskDeliveryMatrix = async (req, res) => {
 
     } catch (error) {
         console.error('Error in taskDeliveryMatrix:', error);
-        throw error; // Let the caller handle the error
+        throw error; 
     }
 }
 
