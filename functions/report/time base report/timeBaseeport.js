@@ -7,9 +7,16 @@ const parseDate = (dateString) => {
 };
 
 const timeBaseReport = async (req, res) => {
+    const user = req.user.uid;
     try {
         const result = await Mongob('ManageWise', 'pools', async (collection) => {
-            const pools = await collection.find({}).toArray();
+            const pools = await collection.find({
+                'tasks': {
+                    $elemMatch: {
+                        'contributor': user,
+                    }
+                }
+            }).toArray();
             
             const currentDate = new Date();
             const oneWeekAgo = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
