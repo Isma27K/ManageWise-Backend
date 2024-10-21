@@ -2,7 +2,14 @@ const Mongob = require('../../../utils/mongodb/mongodb.js');
 
 
 const poolTaskPartion = async (req, res) => {
-    const user = req.user.uid;
+    const {selectUser} = req.body;
+    const user = "";
+
+    if (req.user.admin && selectUser) {
+        user = selectUser;
+    }else{
+        user = req.user.uid;
+    }
     
     const result = await Mongob('ManageWise', 'pools', async (collection) => {
         return await collection.find({
