@@ -5,6 +5,7 @@ const Mongob = require('../../utils/mongodb/mongodb.js');
 const multer = require('multer');
 const { updateUsername } = require('../../functions/update/username.js');
 const { updateAvatar } = require('../../functions/update/updateAvatar.js');
+const { updatePool } = require('../../functions/update/updatePool.js');
 
 // Set up multer for parsing multipart form data
 const upload = multer();
@@ -18,6 +19,10 @@ router.post('/username', authenticateToken, async (req, res) => {
 
 router.post('/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
     return updateAvatar(req, res);
+});
+
+router.post('/pool', authenticateToken, async (req, res) => {
+    return updatePool(req, res);
 });
 
 module.exports = router;
