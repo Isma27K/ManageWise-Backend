@@ -5,52 +5,54 @@ const Mongob = require('../../utils/mongodb/mongodb.js');
 const adminCreatePool = async (req, res) => {
     const { poolName, poolDescription, userId } = req.body;
 
-    //console.log(poolName, poolDescription, userIds);
+    if (!req.user.admin) {
+        return res.status(403).json({ error: 'Unauthorized access' });
+    }
 
-    if (req.user.admin) {
+    try {
+        const user = await Mongob('ManageWise', 'users', async (collection) => {
+            return await collection.findOne({_id: req.user.uid});
+        });
 
-        try{
-            const user = await Mongob('ManageWise', 'users', async (collection) => {
-                return await collection.findOne({_id: req.user.uid});
-            });
-
-            if (!user) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            if (!user.admin){
-                return res.status(401).json({error: 'you are not authorize to do so'})
-            }
-
-            if (user.admin) {
-                
-        
-                // Check if userIds is an array if provided
-                if (userId !== undefined && (!Array.isArray(userId) || userId.some(id => typeof id !== 'string'))) {
-                    return res.status(400).json({ error: 'userIds must be an array of strings' });
-                }
-
-                const poolId = uuidv4();
-
-                await Mongob('ManageWise', 'pools', async (collection) => {
-                    return await collection.insertOne({
-                        _id: poolId,
-                        name: poolName,
-                        description: poolDescription,
-                        userIds: userId || [], // Use an empty array if userIds is not provided
-                        tasks: [],
-                        createdAt: new Date()
-                    }); 
-                });
-
-                res.status(200).json({ message: "OK", poolId: poolId });
-            }
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
-        catch(error){
-            res.status(500).json({ error: error.message });
+
+        if (!user.admin) {
+            return res.status(401).json({ error: 'You are not authorized to do so' });
         }
-    } else {
-        return res.status(403).json({ error: 'Unauthorized access' }); // Forbidden access for non-admins
+
+        // Check if userIds is an array if provided
+        if (userId !== undefined && (!Array.isArray(userId) || userId.some(id => typeof id !== 'string'))) {
+            return res.status(400).json({ error: 'userIds must be an array of strings' });
+        }
+
+        // Check if a pool with the same name (case-insensitive) already exists
+        const existingPool = await Mongob('ManageWise', 'pools', async (collection) => {
+            return await collection.findOne({ name: { $regex: new RegExp(`^${poolName}$`, 'i') } });
+        });
+
+        if (existingPool) {
+            return res.status(409).json({ error: 'A pool with this name already exists' });
+        }
+
+        const poolId = uuidv4();
+
+        await Mongob('ManageWise', 'pools', async (collection) => {
+            return await collection.insertOne({
+                _id: poolId,
+                name: poolName,
+                description: poolDescription,
+                userIds: userId || [], // Use an empty array if userIds is not provided
+                tasks: [],
+                createdAt: new Date()
+            }); 
+        });
+
+        res.status(200).json({ message: "Pool created successfully", poolId: poolId });
+    } catch (error) {
+        console.error('Error in adminCreatePool:', error);
+        res.status(500).json({ error: 'An internal server error occurred' });
     }
 }
 
