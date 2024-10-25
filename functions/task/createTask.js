@@ -34,7 +34,7 @@ const createTask = async (req, res) => {
                 id: pool.tasks ? pool.tasks.length + 1 : 1,
                 name,
                 description,
-                dueDate: parsedDueDate, // This should now be an array of two dates
+                dueDate: parsedDueDate,
                 progress: [],
                 contributor: parsedSubmitters,
                 attachments: attachments,
@@ -55,8 +55,8 @@ const createTask = async (req, res) => {
                     return await collection.find({ _id: { $in: parsedSubmitters || [] } }).toArray();
                 });
 
-                // Send emails to all contributors
-                for (const contributor of contributors) {
+                // Prepare email sending promises
+                const emailPromises = contributors.map(contributor => {
                     const emailSubject = `New Task Assigned: ${name}`;
                     const emailContent = `
                         <html>
@@ -83,13 +83,13 @@ const createTask = async (req, res) => {
                         </html>
                     `;
 
-                    try {
-                        await sendEmail(contributor.email, emailSubject, emailContent, emailContent);
-                        console.log(`Email sent successfully to ${contributor.email}`);
-                    } catch (error) {
-                        console.error(`Failed to send email to ${contributor.email}:`, error);
-                    }
-                }
+                    return sendEmail(contributor.email, emailSubject, emailContent, emailContent)
+                        .then(() => console.log(`Email sent successfully to ${contributor.email}`))
+                        .catch(error => console.error(`Failed to send email to ${contributor.email}:`, error));
+                });
+
+                // Send emails concurrently
+                await Promise.all(emailPromises);
 
                 return { message: 'Task created successfully', task: newTask };
             } else {
