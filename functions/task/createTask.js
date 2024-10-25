@@ -62,9 +62,10 @@ const createTask = async (req, res) => {
                         <html>
                         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                             <h2 style="color: #4a4a4a;">Hello ${contributor.name},</h2>
-                            <p>A new task has been assigned to you in the ${pool.name} pool on ManageWise.</p>
+                            <p>A new task has been assigned to you in the <strong>${pool.name}</strong> pool on ManageWise.</p>
                             <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
                                 <h3 style="color: #2c3e50; margin-top: 0;">Task Details:</h3>
+                                <p><strong>Pool:</strong> ${pool.name}</p>
                                 <p><strong>Name:</strong> ${name}</p>
                                 <p><strong>Description:</strong> ${description}</p>
                                 <p><strong>Due Date:</strong> ${new Date(parsedDueDate).toLocaleDateString()}</p>
