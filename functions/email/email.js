@@ -34,11 +34,7 @@ function sendEmail(to, subject, text, html) {
     return new Promise((resolve, reject) => {
         transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error('Error:', error);
             reject(error);
-        } else {
-            console.log('Email sent:', info.response);
-            resolve(info);
         }
     });
   });
