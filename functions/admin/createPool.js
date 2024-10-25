@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const Mongob = require('../../utils/mongodb/mongodb.js');
+const sendEmail = require('../email/email.js');
 
 
 const adminCreatePool = async (req, res) => {
@@ -48,6 +49,31 @@ const adminCreatePool = async (req, res) => {
                 createdAt: new Date()
             }); 
         });
+
+        // Fetch user details for all contributors
+        const contributors = await Mongob('ManageWise', 'users', async (collection) => {
+            return await collection.find({ _id: { $in: userId || [] } }).toArray();
+        });
+
+        // Send emails to all contributors
+        for (const contributor of contributors) {
+            const emailSubject = `You've been added to a new pool: ${poolName}`;
+            const emailContent = `
+                <h2>Hello ${contributor.name},</h2>
+                <p>You have been added to a new pool in ManageWise.</p>
+                <p><strong>Pool Name:</strong> ${poolName}</p>
+                <p><strong>Pool Description:</strong> ${poolDescription}</p>
+                <p>Log in to your ManageWise account to view and manage tasks in this new pool.</p>
+                <p>Best regards,<br>The ManageWise Team</p>
+            `;
+
+            try {
+                await sendEmail(contributor.email, emailSubject, emailContent, emailContent);
+                console.log(`Email sent successfully to ${contributor.email}`);
+            } catch (error) {
+                console.error(`Failed to send email to ${contributor.email}:`, error);
+            }
+        }
 
         res.status(200).json({ message: "Pool created successfully", poolId: poolId });
     } catch (error) {
