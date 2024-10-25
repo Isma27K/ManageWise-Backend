@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+const dotenv = require('dotenv');
 
 dotenv.config();
 
