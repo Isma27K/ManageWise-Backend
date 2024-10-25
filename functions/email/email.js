@@ -1,30 +1,64 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config();
 
-
-// Create a transporter object with your email service credentials
-let transporter = nodemailer.createTransport({
-    service: 'gmail', // Use the email service you prefer (e.g., Gmail, Outlook, etc.)
+// Create a transporter using SMTP
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
-        user: process.env.EMAIL_USER, // Your email
-        pass: process.env.EMAIL_PASS,  // Your email password
+        user: 'gunungdew@gmail.com',
+        pass: 'dgbk svnl gdza dwih'
     }
 });
 
-// Set up email data
-let mailOptions = {
-    from: 'noreply@yourdomain.com', // Sender address (you can customize the noreply email here)
-    to: 'user@example.com', // Recipient's email address
-    subject: 'Your subject here', // Subject line
-    text: 'This is a test email sent from Node.js!', // Plain text body
-    html: '<p>This is a test email sent from <b>Node.js</b>!</p>' // HTML body (optional)
-};
+/**
+ * Sends an email using the configured transporter
+ * @param {string} to - Recipient's email address
+ * @param {string} subject - Email subject
+ * @param {string} text - Plain text content of the email
+ * @param {string} html - HTML content of the email
+ * @returns {Promise} - Resolves with info about the sent email, rejects with an error
+ */
+function sendEmail(to, subject, text, html) {
+    const mailOptions = {
+        from: 'gunungdew@gmail.com',
+        to: to,
+        subject: subject,
+        text: text,
+        html: html
+    };
 
-// Send the email
-transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        return console.log(error);
-    }
-    console.log('Message sent: %s', info.messageId);
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-});
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error:', error);
+            reject(error);
+        } else {
+            console.log('Email sent:', info.response);
+            resolve(info);
+        }
+    });
+  });
+}
+
+module.exports = sendEmail;
+
+
+//const sendEmail = require('./send_email');
+
+// Example usage
+//sendEmail('recipient@example.com', 'Test Subject', 'Plain text content', '<p>HTML content</p>')
+//  .then(info => console.log('Email sent successfully:', info))
+//  .catch(error => console.error('Failed to send email:', error));
+
+// Or using async/await
+//async function sendTestEmail() {
+//  try {
+//    const info = await sendEmail('recipient@example.com', 'Test Subject', 'Plain text content', '<p>HTML content</p>');
+//    console.log('Email sent successfully:', info);
+//  } catch (error) {
+//    console.error('Failed to send email:', error);
+//  }
+//}
+
+//sendTestEmail();
