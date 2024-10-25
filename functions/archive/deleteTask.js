@@ -11,11 +11,7 @@ const deleteTask = async (req, res) => {
                 { returnDocument: 'after' }
             );
         });
-
-        if (!response.value) {
-            return res.status(404).json({ error: 'Task or pool not found' });
-        }
-
+        
         res.status(200).json({ message: 'Task deleted successfully', updatedPool: response.value });
     } catch (error) {
         console.error('Error in deleteTask:', error);
