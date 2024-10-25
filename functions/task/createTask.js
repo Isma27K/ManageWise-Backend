@@ -34,7 +34,7 @@ const createTask = async (req, res) => {
                 id: pool.tasks ? pool.tasks.length + 1 : 1,
                 name,
                 description,
-                dueDate: parsedDueDate,
+                dueDate: parsedDueDate, // This should now be an array of two dates
                 progress: [],
                 contributor: parsedSubmitters,
                 attachments: attachments,
@@ -68,7 +68,7 @@ const createTask = async (req, res) => {
                                 <p><strong>Pool:</strong> ${pool.name}</p>
                                 <p><strong>Name:</strong> ${name}</p>
                                 <p><strong>Description:</strong> ${description}</p>
-                                <p><strong>Due Date:</strong> ${new Date(parsedDueDate).toLocaleDateString()}</p>
+                                <p><strong>Due Date:</strong> ${parsedDueDate[0]} to ${parsedDueDate[1]}</p>
                             </div>
                             <h3 style="color: #2c3e50;">What's Next?</h3>
                             <ol>
