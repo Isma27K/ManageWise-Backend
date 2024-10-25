@@ -4,6 +4,11 @@ const deleteTask = async (req, res) => {
     const { poolId, taskId } = req.body;
 
     try {
+
+        if (!poolId || !taskId) {
+            return res.status(400).json({ error: 'Missing poolId or taskId' });
+        }
+
         const response = await Mongob('ManageWise', 'pools', async (collection) => {
             return await collection.findOneAndUpdate(
                 { _id: poolId },
@@ -11,7 +16,7 @@ const deleteTask = async (req, res) => {
                 { returnDocument: 'after' }
             );
         });
-        
+
         res.status(200).json({ message: 'Task deleted successfully', updatedPool: response.value });
     } catch (error) {
         console.error('Error in deleteTask:', error);
