@@ -57,14 +57,28 @@ const adminCreatePool = async (req, res) => {
 
         // Send emails to all contributors
         for (const contributor of contributors) {
-            const emailSubject = `You've been added to a new pool: ${poolName}`;
+            const emailSubject = `Welcome to Your New ManageWise Pool: ${poolName}`;
             const emailContent = `
-                <h2>Hello ${contributor.name},</h2>
-                <p>You have been added to a new pool in ManageWise.</p>
-                <p><strong>Pool Name:</strong> ${poolName}</p>
-                <p><strong>Pool Description:</strong> ${poolDescription}</p>
-                <p>Log in to your ManageWise account to view and manage tasks in this new pool.</p>
-                <p>Best regards,<br>The ManageWise Team</p>
+                <html>
+                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <h2 style="color: #4a4a4a;">Hello ${contributor.name},</h2>
+                    <p>Great news! You've been added to ${poolName} pool in ManageWise.</p>
+                    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h3 style="color: #2c3e50; margin-top: 0;">Pool Details:</h3>
+                        <p><strong>Name:</strong> ${poolName}</p>
+                        <p><strong>Description:</strong> ${poolDescription}</p>
+                    </div>
+                    <h3 style="color: #2c3e50;">What's Next?</h3>
+                    <ol>
+                        <li><a href="https://managewise.ratacode.top/login">Log in to your ManageWise account</a></li>
+                        <li>Find "${poolName}" in your list of pools</li>
+                        <li>Start collaborating with your team!</li>
+                    </ol>
+                    <p>If you have any questions or need assistance, don't hesitate to reach out to our support team.</p>
+                    <p>We're excited to see what you'll accomplish in this new pool!</p>
+                    <p style="margin-top: 30px;">Best regards,<br><strong>The ManageWise Team</strong></p>
+                </body>
+                </html>
             `;
 
             try {
