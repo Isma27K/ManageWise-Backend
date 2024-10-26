@@ -16,16 +16,33 @@ const transporter = nodemailer.createTransport({
 
 /**
  * Sends an email using the configured transporter
+ * If EMAIL_ENABLED is set to 'false', it will log the email details but not send
  * @param {string} to - Recipient's email address
  * @param {string} subject - Email subject
  * @param {string} text - Plain text content of the email
  * @param {string} html - HTML content of the email
  * @param {string|string[]} [cc] - Optional CC recipient(s)
- * @returns {Promise} - Resolves with info about the sent email, rejects with an error
+ * @returns {Promise} - Resolves with info about the sent email or mock success response
  */
 function sendEmail(to, subject, text, html, cc) {
+    // Check if email is disabled
+    const isEmailEnabled = process.env.EMAIL_ENABLED?.toLowerCase() === 'true';
+
+    if (!isEmailEnabled) {
+        console.log('Email notifications are disabled. Would have sent:', {
+            to,
+            subject,
+            cc: cc || 'No CC',
+            preview: text.substring(0, 100) + '...'
+        });
+        return Promise.resolve({ 
+            messageId: 'DISABLED-' + Date.now(),
+            response: 'Email notifications are disabled'
+        });
+    }
+
     const mailOptions = {
-        from: 'gunungdew@gmail.com',
+        from: process.env.EMAIL_USER,
         to: to,
         subject: subject,
         text: text,
@@ -40,8 +57,10 @@ function sendEmail(to, subject, text, html, cc) {
     return new Promise((resolve, reject) => {
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
+                console.error('Failed to send email:', error);
                 reject(error);
             } else {
+                console.log('Email sent successfully:', info);
                 resolve(info);
             }
         });
