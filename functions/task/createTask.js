@@ -55,6 +55,9 @@ const createTask = async (req, res) => {
                     return await collection.find({ _id: { $in: parsedSubmitters || [] } }).toArray();
                 });
 
+                // Extract contributor emails
+                const contributorEmails = contributors.map(contributor => contributor.email);
+
                 // Prepare email sending promises
                 const emailPromises = contributors.map(contributor => {
                     const emailSubject = `New Task Assigned: ${name}`;
@@ -83,7 +86,10 @@ const createTask = async (req, res) => {
                         </html>
                     `;
 
-                    return sendEmail(contributor.email, emailSubject, emailContent, emailContent)
+                    // Remove the current contributor's email from the CC list
+                    const ccList = contributorEmails.filter(email => email !== contributor.email);
+
+                    return sendEmail(contributor.email, emailSubject, emailContent, emailContent, ccList)
                         .then(() => console.log(`Email sent successfully to ${contributor.email}`))
                         .catch(error => console.error(`Failed to send email to ${contributor.email}:`, error));
                 });
