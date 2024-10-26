@@ -1,30 +1,89 @@
 const Mongob = require('../../utils/mongodb/mongodb.js');
+const sendEmail = require('../email/email.js');
 
 const archiveTask = async (req, res) => {
     const { poolId, taskId } = req.body;
 
     try {
-        const response = await Mongob('ManageWise', 'pools', async (collection) => {
-            return await collection.findOneAndUpdate(
+        const result = await Mongob('ManageWise', 'pools', async (collection) => {
+            // First, get the pool and task details before updating
+            const pool = await collection.findOne({ _id: poolId });
+            if (!pool) {
+                return { error: 'Pool not found' };
+            }
+
+            const task = pool.tasks.find(t => t.id === parseInt(taskId));
+            if (!task) {
+                return { error: 'Task not found' };
+            }
+
+            // Update the task
+            const updateResult = await collection.findOneAndUpdate(
                 { _id: poolId, "tasks.id": parseInt(taskId) },
                 { $set: { "tasks.$.isArchived": true, "tasks.$.archivedAt": new Date() } },
                 { returnDocument: 'after' }
             );
+
+            if (!updateResult) {
+                return { error: 'Failed to archive task' };
+            }
+
+            // Get all contributors from task.contributor array
+            const contributors = await Mongob('ManageWise', 'users', async (userCollection) => {
+                return await userCollection.find({ 
+                    _id: { $in: task.contributor }
+                }).toArray();
+            });
+
+            if (contributors.length > 0) {
+                const contributorEmails = contributors.map(contributor => contributor.email);
+                
+                const emailSubject = `Task Closed: ${task.name}`;
+                const emailContent = `
+                    <html>
+                    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                        <h2 style="color: #4a4a4a;">Task Closed</h2>
+                        <p>The task "<strong>${task.name}</strong>" in pool "<strong>${pool.name}</strong>" has been marked as completed and archived.</p>
+                        <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                            <h3 style="color: #2c3e50; margin-top: 0;">Task Details:</h3>
+                            <p><strong>Task Name:</strong> ${task.name}</p>
+                            <p><strong>Pool:</strong> ${pool.name}</p>
+                            <p><strong>Description:</strong> ${task.description}</p>
+                            <p><strong>Due Date:</strong> ${task.dueDate[0]} to ${task.dueDate[1]}</p>
+                            <p><strong>Archived Date:</strong> ${new Date().toLocaleString()}</p>
+                        </div>
+                        <p>The task has been moved to the archive. You can still view it in the archive panel.</p>
+                        <p>To view the archived task:</p>
+                        <ol>
+                            <li><a href="https://managewise.ratacode.top/login">Log in to ManageWise</a></li>
+                            <li>Go to the Archive Panel</li>
+                            <li>Find the task "${task.name}" under pool "${pool.name}"</li>
+                        </ol>
+                        <p>Thank you for your contribution to this task!</p>
+                        <p style="margin-top: 30px;">Best regards,<br><strong>The ManageWise Team</strong></p>
+                    </body>
+                    </html>
+                `;
+
+                try {
+                    await sendEmail(contributorEmails, emailSubject, emailContent, emailContent);
+                    console.log(`Task archive notification sent to all contributors`);
+                } catch (error) {
+                    console.error('Error sending archive notification email:', error);
+                }
+            }
+
+            return { message: 'Task archived successfully', updatedPool: updateResult };
         });
 
-
-        if (!response || !response.tasks) {
-            return res.status(404).json({ error: 'Pool or task not found' });
+        if (result.error) {
+            return res.status(result.error.includes('not found') ? 404 : 500).json({ error: result.error });
         }
 
-        const updatedTask = response.tasks.find(task => task.id === parseInt(taskId));
-        if (!updatedTask || !updatedTask.isArchived) {
-            return res.status(500).json({ error: 'Failed to archive task' });
-        }
-
-        res.status(200).json({ message: 'Task unarchived successfully', updatedPool: response });
+        res.status(200).json(result);
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while unarchiving the task' });
+        console.error('Error in archiveTask:', error);
+        res.status(500).json({ error: 'An error occurred while archiving the task' });
     }
 };
 
