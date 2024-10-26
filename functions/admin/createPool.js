@@ -55,49 +55,41 @@ const adminCreatePool = async (req, res) => {
             return await collection.find({ _id: { $in: userId || [] } }).toArray();
         });
 
-        // Extract all contributor emails
+        // Extract all contributor emails and names
         const contributorEmails = contributors.map(contributor => contributor.email);
+        const contributorNames = contributors.map(contributor => contributor.name).join(', ');
 
-        // Send emails to all contributors
-        const emailPromises = contributors.map(contributor => {
-            const emailSubject = `Welcome to Your New ManageWise Pool: ${poolName}`;
-            const emailContent = `
-                <html>
-                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                    <h2 style="color: #4a4a4a;">Hello ${contributor.name},</h2>
-                    <p>Great news! You've been added to ${poolName} pool in ManageWise.</p>
-                    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="color: #2c3e50; margin-top: 0;">Pool Details:</h3>
-                        <p><strong>Name:</strong> ${poolName}</p>
-                        <p><strong>Description:</strong> ${poolDescription}</p>
-                    </div>
-                    <h3 style="color: #2c3e50;">What's Next?</h3>
-                    <ol>
-                        <li><a href="https://managewise.ratacode.top/login">Log in to your ManageWise account</a></li>
-                        <li>Find "${poolName}" in your list of pools</li>
-                        <li>Start collaborating with your team!</li>
-                    </ol>
-                    <p>If you have any questions or need assistance, don't hesitate to reach out to our support team.</p>
-                    <p>We're excited to see what you'll accomplish in this new pool!</p>
-                    <p style="margin-top: 30px;">Best regards,<br><strong>The ManageWise Team</strong></p>
-                </body>
-                </html>
-            `;
+        const emailSubject = `Welcome to Your New ManageWise Pool: ${poolName}`;
+        const emailContent = `
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <h2 style="color: #4a4a4a;">Hello ${contributorNames},</h2>
+                <p>Great news! You've been added to ${poolName} pool in ManageWise.</p>
+                <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                    <h3 style="color: #2c3e50; margin-top: 0;">Pool Details:</h3>
+                    <p><strong>Name:</strong> ${poolName}</p>
+                    <p><strong>Description:</strong> ${poolDescription}</p>
+                </div>
+                <h3 style="color: #2c3e50;">What's Next?</h3>
+                <ol>
+                    <li><a href="https://managewise.ratacode.top/login">Log in to your ManageWise account</a></li>
+                    <li>Find "${poolName}" in your list of pools</li>
+                    <li>Start collaborating with your team!</li>
+                </ol>
+                <p>If you have any questions or need assistance, don't hesitate to reach out to our support team.</p>
+                <p>We're excited to see what you'll accomplish in this new pool!</p>
+                <p style="margin-top: 30px;">Best regards,<br><strong>The ManageWise Team</strong></p>
+            </body>
+            </html>
+        `;
 
-            // Remove the current contributor's email from the CC list
-            const ccList = contributorEmails.filter(email => email !== contributor.email);
-
-            return sendEmail(contributor.email, emailSubject, emailContent, emailContent, ccList)
-                .then(() => console.log(`Email sent successfully to ${contributor.email}`))
-                .catch(error => console.error(`Failed to send email to ${contributor.email}:`, error));
-        });
-
-        // Send all emails concurrently
+        // Send single email to all contributors
         try {
-            await Promise.all(emailPromises);
+            await sendEmail(contributorEmails, emailSubject, emailContent, emailContent);
+            console.log(`Email sent successfully to all contributors`);
         } catch (error) {
-            console.error('Error sending some emails:', error);
-            // Continue execution even if some emails fail
+            console.error('Error sending email:', error);
+            // Continue execution even if email fails
         }
 
         res.status(200).json({ message: "Pool created successfully", poolId: poolId });

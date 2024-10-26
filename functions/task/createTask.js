@@ -55,47 +55,42 @@ const createTask = async (req, res) => {
                     return await collection.find({ _id: { $in: parsedSubmitters || [] } }).toArray();
                 });
 
-                // Extract contributor emails
+                // Extract contributor emails and names
                 const contributorEmails = contributors.map(contributor => contributor.email);
+                const contributorNames = contributors.map(contributor => contributor.name).join(', ');
 
-                // Prepare email sending promises
-                const emailPromises = contributors.map(contributor => {
-                    const emailSubject = `New Task Assigned: ${name}`;
-                    const emailContent = `
-                        <html>
-                        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                            <h2 style="color: #4a4a4a;">Hello ${contributor.name},</h2>
-                            <p>A new task has been assigned to you in the <strong>${pool.name}</strong> pool on ManageWise.</p>
-                            <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                                <h3 style="color: #2c3e50; margin-top: 0;">Task Details:</h3>
-                                <p><strong>Pool:</strong> ${pool.name}</p>
-                                <p><strong>Name:</strong> ${name}</p>
-                                <p><strong>Description:</strong> ${description}</p>
-                                <p><strong>Due Date:</strong> ${parsedDueDate[0]} to ${parsedDueDate[1]}</p>
-                            </div>
-                            <h3 style="color: #2c3e50;">What's Next?</h3>
-                            <ol>
-                                <li><a href="https://managewise.ratacode.top/login">Log in to your ManageWise account</a></li>
-                                <li>Go to the "${pool.name}" pool</li>
-                                <li>Find the task "${name}" and start working on it</li>
-                            </ol>
-                            <p>If you have any questions about this task or need assistance, please contact your pool administrator or our support team.</p>
-                            <p>Good luck with your new task!</p>
-                            <p style="margin-top: 30px;">Best regards,<br><strong>The ManageWise Team</strong></p>
-                        </body>
-                        </html>
-                    `;
+                const emailSubject = `New Task Assigned: ${name}`;
+                const emailContent = `
+                    <html>
+                    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                        <h2 style="color: #4a4a4a;">Hello ${contributorNames},</h2>
+                        <p>A new task has been assigned to you in the <strong>${pool.name}</strong> pool on ManageWise.</p>
+                        <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                            <h3 style="color: #2c3e50; margin-top: 0;">Task Details:</h3>
+                            <p><strong>Pool:</strong> ${pool.name}</p>
+                            <p><strong>Name:</strong> ${name}</p>
+                            <p><strong>Description:</strong> ${description}</p>
+                            <p><strong>Due Date:</strong> ${parsedDueDate[0]} to ${parsedDueDate[1]}</p>
+                        </div>
+                        <h3 style="color: #2c3e50;">What's Next?</h3>
+                        <ol>
+                            <li><a href="https://managewise.ratacode.top/login">Log in to your ManageWise account</a></li>
+                            <li>Go to the "${pool.name}" pool</li>
+                            <li>Find the task "${name}" and start working on it</li>
+                        </ol>
+                        <p>If you have any questions about this task or need assistance, please contact your pool administrator or our support team.</p>
+                        <p>Good luck with your new task!</p>
+                        <p style="margin-top: 30px;">Best regards,<br><strong>The ManageWise Team</strong></p>
+                    </body>
+                    </html>
+                `;
 
-                    // Remove the current contributor's email from the CC list
-                    const ccList = contributorEmails.filter(email => email !== contributor.email);
-
-                    return sendEmail(contributor.email, emailSubject, emailContent, emailContent, ccList)
-                        .then(() => console.log(`Email sent successfully to ${contributor.email}`))
-                        .catch(error => console.error(`Failed to send email to ${contributor.email}:`, error));
-                });
-
-                // Send emails concurrently
-                await Promise.all(emailPromises);
+                try {
+                    await sendEmail(contributorEmails, emailSubject, emailContent, emailContent);
+                    console.log(`Email sent successfully to all contributors`);
+                } catch (error) {
+                    console.error('Error sending email:', error);
+                }
 
                 return { message: 'Task created successfully', task: newTask };
             } else {
