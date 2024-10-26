@@ -63,7 +63,7 @@ const createTask = async (req, res) => {
                 const emailContent = `
                     <html>
                     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                        <h2 style="color: #4a4a4a;">Hello ${contributorNames},</h2>
+                        <h2 style="color: #4a4a4a;">Task Assigned,</h2>
                         <p>A new task has been assigned to you in the <strong>${pool.name}</strong> pool on ManageWise.</p>
                         <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
                             <h3 style="color: #2c3e50; margin-top: 0;">Task Details:</h3>
