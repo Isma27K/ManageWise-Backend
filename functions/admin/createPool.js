@@ -55,8 +55,11 @@ const adminCreatePool = async (req, res) => {
             return await collection.find({ _id: { $in: userId || [] } }).toArray();
         });
 
+        // Extract all contributor emails
+        const contributorEmails = contributors.map(contributor => contributor.email);
+
         // Send emails to all contributors
-        for (const contributor of contributors) {
+        const emailPromises = contributors.map(contributor => {
             const emailSubject = `Welcome to Your New ManageWise Pool: ${poolName}`;
             const emailContent = `
                 <html>
@@ -81,12 +84,20 @@ const adminCreatePool = async (req, res) => {
                 </html>
             `;
 
-            try {
-                await sendEmail(contributor.email, emailSubject, emailContent, emailContent);
-                console.log(`Email sent successfully to ${contributor.email}`);
-            } catch (error) {
-                console.error(`Failed to send email to ${contributor.email}:`, error);
-            }
+            // Remove the current contributor's email from the CC list
+            const ccList = contributorEmails.filter(email => email !== contributor.email);
+
+            return sendEmail(contributor.email, emailSubject, emailContent, emailContent, ccList)
+                .then(() => console.log(`Email sent successfully to ${contributor.email}`))
+                .catch(error => console.error(`Failed to send email to ${contributor.email}:`, error));
+        });
+
+        // Send all emails concurrently
+        try {
+            await Promise.all(emailPromises);
+        } catch (error) {
+            console.error('Error sending some emails:', error);
+            // Continue execution even if some emails fail
         }
 
         res.status(200).json({ message: "Pool created successfully", poolId: poolId });
