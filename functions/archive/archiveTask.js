@@ -3,6 +3,7 @@ const sendEmail = require('../email/email.js');
 
 const archiveTask = async (req, res) => {
     const { poolId, taskId } = req.body;
+    const userId = req.user.uid;  // Get the user ID from the request
 
     try {
         const result = await Mongob('ManageWise', 'pools', async (collection) => {
@@ -17,10 +18,28 @@ const archiveTask = async (req, res) => {
                 return { error: 'Task not found' };
             }
 
-            // Update the task
+            // Get the user who is archiving the task
+            const archivingUser = await Mongob('ManageWise', 'users', async (userCollection) => {
+                return await userCollection.findOne({ _id: userId });
+            });
+
+            if (!archivingUser) {
+                return { error: 'User not found' };
+            }
+
+            // Update the task with archiving details
             const updateResult = await collection.findOneAndUpdate(
                 { _id: poolId, "tasks.id": parseInt(taskId) },
-                { $set: { "tasks.$.isArchived": true, "tasks.$.archivedAt": new Date() } },
+                { 
+                    $set: { 
+                        "tasks.$.isArchived": true, 
+                        "tasks.$.archivedAt": new Date(),
+                        "tasks.$.archivedBy": {
+                            userId: archivingUser._id,
+                            name: archivingUser.name
+                        }
+                    } 
+                },
                 { returnDocument: 'after' }
             );
 
@@ -43,13 +62,14 @@ const archiveTask = async (req, res) => {
                     <html>
                     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                         <h2 style="color: #4a4a4a;">Task Closed</h2>
-                        <p>The task "<strong>${task.name}</strong>" in pool "<strong>${pool.name}</strong>" has been marked as completed and archived.</p>
+                        <p>The task "<strong>${task.name}</strong>" in pool "<strong>${pool.name}</strong>" has been marked as completed and archived by <strong>${archivingUser.name}</strong>.</p>
                         <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
                             <h3 style="color: #2c3e50; margin-top: 0;">Task Details:</h3>
                             <p><strong>Task Name:</strong> ${task.name}</p>
                             <p><strong>Pool:</strong> ${pool.name}</p>
                             <p><strong>Description:</strong> ${task.description}</p>
                             <p><strong>Due Date:</strong> ${task.dueDate[0]} to ${task.dueDate[1]}</p>
+                            <p><strong>Archived By:</strong> ${archivingUser.name}</p>
                             <p><strong>Archived Date:</strong> ${new Date().toLocaleString()}</p>
                         </div>
                         <p>The task has been moved to the archive. You can still view it in the archive panel.</p>
@@ -73,7 +93,11 @@ const archiveTask = async (req, res) => {
                 }
             }
 
-            return { message: 'Task archived successfully', updatedPool: updateResult };
+            return { 
+                message: 'Task archived successfully', 
+                updatedPool: updateResult,
+                archivedBy: archivingUser.name 
+            };
         });
 
         if (result.error) {
