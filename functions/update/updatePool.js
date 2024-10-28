@@ -2,7 +2,7 @@ const Mongob = require('../../utils/mongodb/mongodb.js');
 const { ObjectId } = require('mongodb');
 
 const updatePool = async (req, res) => {
-    const { poolId, name, description, userIds } = req.body;
+    const { poolId, name, userIds } = req.body;
     const user = req.user.uid;
     
     if (!req.user.admin) {
@@ -20,7 +20,6 @@ const updatePool = async (req, res) => {
                 {
                     $set: {
                         name: name,
-                        description: description || '',
                         userIds: userIds || []
                     }
                 }
