@@ -49,7 +49,7 @@ function ensureUploadDirExists() {
 ensureUploadDirExists();
 
 // Custom streaming handler for uploaded files
-app.get('/uploads', (req, res) => {
+app.get('/uploads/:filename', (req, res) => {
   const filePath = path.join(__dirname, '..', 'uploads', req.params.filename);
   
   // Check if file exists
