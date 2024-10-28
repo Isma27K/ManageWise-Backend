@@ -17,6 +17,7 @@ const update = require('./routes/update/update.js');
 const admin = require('./routes/admin/admin.js');
 const task = require('./routes/task/task.js');
 const report = require('./routes/report/report.js');
+const gemini = require('./routes/gemini/gemini.js');
 //============================= File Uploads middleware ========================================
 
 const app = express();
@@ -73,6 +74,7 @@ app.use('/api/task', task);                 // task related routes
 app.use('/update', update);                 // update related routes
 app.use('/api/admin', admin);               // admin related routes
 app.use('/api/archive', archive);           // archive related routes
+app.use('/api/v1', gemini);
 
 //                           ------------------
 
