@@ -6,7 +6,10 @@ const userData = async (req, res) => {
 
         // Fetch user data from MongoDB
         const data = await Mongob('ManageWise', 'users', async (collection) => {
-            return await collection.findOne({ _id: req.user.uid });
+            return await collection.findOne(
+                { _id: req.user.uid },
+                { projection: { apiKey: 0 } }  // Exclude apiKey from the result
+            );
         });
 
         if (!data) {
