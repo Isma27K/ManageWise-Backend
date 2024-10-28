@@ -48,8 +48,44 @@ function ensureUploadDirExists() {
 
 ensureUploadDirExists();
 
-// Serve static files from the uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+// Custom streaming handler for uploaded files
+app.get('/uploads', (req, res) => {
+  const filePath = path.join(__dirname, '..', 'uploads', req.params.filename);
+  
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send('File not found');
+  }
+
+  // Get file stats
+  const stat = fs.statSync(filePath);
+  
+  // Handle range requests for partial content
+  const range = req.headers.range;
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : stat.size - 1;
+    const chunksize = (end - start) + 1;
+    
+    res.writeHead(206, {
+      'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunksize,
+      'Content-Type': 'application/octet-stream'
+    });
+    
+    fs.createReadStream(filePath, {start, end}).pipe(res);
+  } else {
+    // Stream the entire file if no range is requested
+    res.writeHead(200, {
+      'Content-Length': stat.size,
+      'Content-Type': 'application/octet-stream',
+      'Accept-Ranges': 'bytes'
+    });
+    fs.createReadStream(filePath).pipe(res);
+  }
+});
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
