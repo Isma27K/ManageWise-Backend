@@ -21,10 +21,9 @@ const report = require('./routes/report/report.js');
 
 const app = express();
 
-// Increase the limit for JSON payloads
-app.use(bodyParser.json({limit: '50mb'}));
-// Increase the limit for URL-encoded payloads
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+// Set 1MB limits for body parser
+app.use(bodyParser.json({limit: '1mb'}));
+app.use(bodyParser.urlencoded({limit: '1mb', extended: true}));
 
 // Middleware to handle CORS
 app.use(cors());

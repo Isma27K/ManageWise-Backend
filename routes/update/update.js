@@ -8,16 +8,16 @@ const { updateAvatar } = require('../../functions/update/updateAvatar.js');
 const { updatePool } = require('../../functions/update/updatePool.js');
 const { removeAvatar } = require('../../functions/update/removeAvatar.js');
 
-// Set up multer for parsing multipart form data with increased limits
+// Set up multer for parsing multipart form data with 1MB limits
 const upload = multer({
     limits: {
-        fieldSize: 10 * 1024 * 1024, // 10MB limit for fields
-        fileSize: 10 * 1024 * 1024   // 10MB limit for files
+        fieldSize: 1 * 1024 * 1024, // 1MB limit for fields
+        fileSize: 1 * 1024 * 1024   // 1MB limit for files
     }
 });
 
 // Middleware to parse JSON for all routes in this file
-router.use(express.json({ limit: '10mb' })); // Increase limit to handle large base64 strings
+router.use(express.json({ limit: '1mb' })); // 1MB limit for JSON
 
 router.post('/username', authenticateToken, async (req, res) => {
     return updateUsername(req, res);
