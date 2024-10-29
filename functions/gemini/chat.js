@@ -11,7 +11,6 @@ const chat = async (req, res) => {
     const uid = req.user.uid;
 
     try {
-        // Get user data from database
         const userData = await Mongob('ManageWise', 'users', async (collection) => {
             return await collection.findOne({ _id: uid });
         });

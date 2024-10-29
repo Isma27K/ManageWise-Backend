@@ -23,8 +23,8 @@ const gemini = require('./routes/gemini/gemini.js');
 const app = express();
 
 // Set 1MB limits for body parser
-app.use(bodyParser.json({limit: '1mb'}));
-app.use(bodyParser.urlencoded({limit: '1mb', extended: true}));
+app.use(bodyParser.json({limit: '25mb'}));
+app.use(bodyParser.urlencoded({limit: '25mb', extended: true}));
 
 // Middleware to handle CORS
 app.use(cors());

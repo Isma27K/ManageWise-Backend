@@ -5,6 +5,7 @@ const { addApiKey } = require('../../functions/gemini/addApiKey.js');
 const { deleteApiKey } = require('../../functions/gemini/deleteApiKey.js');
 const { chat } = require('../../functions/gemini/chat.js');
 const { getConversations, deleteConversation } = require('../../functions/gemini/conversations.js');
+const { functionCallingChat } = require('../../functions/gemini/functionCalling/chat.js');
 
 router.post('/addKeyword', authenticateToken, async (req, res) => {
     return addApiKey(req, res);
@@ -16,6 +17,10 @@ router.post('/deleteKeyword', authenticateToken, async (req, res) => {
 
 router.post('/chat', authenticateToken, async (req, res) => {
     return chat(req, res);
+});
+
+router.post('/functionCalling/chat', authenticateToken, async (req, res) => {
+    return functionCallingChat(req, res);
 });
 
 // New conversation management endpoints
