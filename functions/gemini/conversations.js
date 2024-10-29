@@ -27,6 +27,12 @@ const deleteConversation = async (req, res) => {
     const uid = req.user.uid;
     
     try {
+        if (!ObjectId.isValid(conversationId)) {
+            return res.status(400).json({
+                error: "Invalid conversation ID format"
+            });
+        }
+
         await Mongob('ManageWise', 'conversations', async (collection) => {
             await collection.deleteOne({ 
                 _id: new ObjectId(conversationId),
