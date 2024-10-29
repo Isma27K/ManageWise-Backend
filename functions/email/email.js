@@ -60,7 +60,6 @@ function sendEmail(to, subject, text, html, cc) {
                 console.error('Failed to send email:', error);
                 reject(error);
             } else {
-                console.log('Email sent successfully:', info);
                 resolve(info);
             }
         });
