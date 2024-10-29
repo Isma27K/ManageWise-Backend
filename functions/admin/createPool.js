@@ -72,7 +72,7 @@ const adminCreatePool = async (req, res) => {
                 </div>
                 <h3 style="color: #2c3e50;">What's Next?</h3>
                 <ol>
-                    <li><a href="https://managewise.ratacode.top/login">Log in to your ManageWise account</a></li>
+                    <li><a href="https://managewise.top/login">Log in to your ManageWise account</a></li>
                     <li>Find "${poolName}" in your list of pools</li>
                     <li>Start collaborating with your team!</li>
                 </ol>

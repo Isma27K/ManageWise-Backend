@@ -75,7 +75,7 @@ const archiveTask = async (req, res) => {
                         <p>The task has been moved to the archive. You can still view it in the archive panel.</p>
                         <p>To view the archived task:</p>
                         <ol>
-                            <li><a href="https://managewise.ratacode.top/login">Log in to ManageWise</a></li>
+                            <li><a href="https://managewise.top/login">Log in to ManageWise</a></li>
                             <li>Go to the Archive Panel</li>
                             <li>Find the task "${task.name}" under pool "${pool.name}"</li>
                         </ol>

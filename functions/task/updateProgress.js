@@ -83,7 +83,7 @@ const updateProgress = async (req, res) => {
                             </div>
                             <p>To view the complete progress and details:</p>
                             <ol>
-                                <li><a href="https://managewise.ratacode.top/login">Log in to ManageWise</a></li>
+                                <li><a href="https://managewise.top/login">Log in to ManageWise</a></li>
                                 <li>Navigate to pool "${pool.name}"</li>
                                 <li>Open task "${task.name}"</li>
                             </ol>
